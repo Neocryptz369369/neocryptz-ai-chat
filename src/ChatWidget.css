@@ -20,6 +20,27 @@
   border-radius: 8px 8px 0 0;
 }
 
+.header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.oauth-btn {
+  background: transparent;
+  border: 1px solid rgba(79, 172, 254, 0.5);
+  color: #4facfe;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+}
+
+.oauth-btn:hover {
+  background: rgba(79, 172, 254, 0.2);
+  box-shadow: 0 0 10px rgba(79, 172, 254, 0.5);
+}
+
 .chat-title {
   display: flex;
   align-items: center;
@@ -408,4 +429,237 @@
   .send-btn {
     padding: 14px 20px;
   }
+
+  .oauth-panel {
+    max-height: 70vh;
+  }
+
+  .platforms-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* OAuth Panel Styles */
+.oauth-panel {
+  background: rgba(10, 10, 20, 0.95);
+  border: 1px solid rgba(79, 172, 254, 0.3);
+  border-radius: 8px;
+  padding: 20px;
+  margin: 15px;
+  max-height: 500px;
+  overflow-y: auto;
+  backdrop-filter: blur(10px);
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.oauth-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.oauth-header h3 {
+  color: #4facfe;
+  margin: 0;
+  font-size: 18px;
+}
+
+.close-panel-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 20px;
+  cursor: pointer;
+  padding: 5px;
+  transition: color 0.3s ease;
+}
+
+.close-panel-btn:hover {
+  color: white;
+}
+
+.oauth-section {
+  margin-bottom: 25px;
+  padding: 15px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.oauth-section h4 {
+  color: #ff6b9d;
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.oauth-description {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 12px;
+  margin: 0 0 15px 0;
+  line-height: 1.4;
+}
+
+.authorize-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #00ff88, #00cc6a);
+  color: #000;
+  border: none;
+  padding: 12px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+}
+
+.authorize-btn:hover {
+  box-shadow: 0 0 15px rgba(0, 255, 136, 0.5);
+  transform: translateY(-2px);
+}
+
+.platforms-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  max-height: 250px;
+  overflow-y: auto;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+}
+
+.platform-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.platform-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(79, 172, 254, 0.5);
+}
+
+.platform-item.authorized {
+  background: rgba(0, 255, 136, 0.1);
+  border-color: rgba(0, 255, 136, 0.5);
+}
+
+.platform-name {
+  color: white;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.platform-status {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 14px;
+}
+
+.platform-item.authorized .platform-status {
+  color: #00ff88;
+}
+
+.token-input-group {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.token-platform-input,
+.token-value-input {
+  flex: 1;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  outline: none;
+}
+
+.token-platform-input:focus,
+.token-value-input:focus {
+  border-color: #ff6b9d;
+}
+
+.add-token-btn {
+  background: linear-gradient(135deg, #ff6b9d, #a855f7);
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  font-size: 12px;
+}
+
+.add-token-btn:hover {
+  box-shadow: 0 0 10px rgba(255, 107, 157, 0.5);
+}
+
+.custom-tokens-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.token-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.token-platform {
+  color: #4facfe;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.token-masked {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 12px;
+  letter-spacing: 2px;
+}
+
+.remove-token-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 107, 157, 0.7);
+  cursor: pointer;
+  padding: 4px;
+  font-size: 14px;
+  transition: color 0.3s ease;
+}
+
+.remove-token-btn:hover {
+  color: #ff6b9d;
 }

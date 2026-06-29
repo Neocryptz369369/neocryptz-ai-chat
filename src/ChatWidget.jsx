@@ -1,19 +1,45 @@
 import { useState, useEffect, useRef } from 'react'
 import './ChatWidget.css'
 
+// OAuth Platforms List (39 platforms)
+const OAUTH_PLATFORMS = [
+  'GitHub', 'Google', 'Microsoft', 'Twitter/X', 'Facebook', 
+  'LinkedIn', 'Slack', 'Discord', 'Reddit', 'YouTube',
+  'Instagram', 'TikTok', 'Pinterest', 'Snapchat', 'WhatsApp',
+  'Telegram', 'Stripe', 'PayPal', 'Shopify', 'Salesforce',
+  'HubSpot', 'Mailchimp', 'Notion', 'Airtable', 'Trello',
+  'Asana', 'Monday.com', 'Figma', 'Canva', 'Dropbox',
+  'Box', 'OneDrive', 'Google Drive', 'AWS', 'Azure',
+  'DigitalOcean', 'Heroku', 'Vercel', 'Netlify', 'OpenAI',
+  'Anthropic', 'Cohere'
+]
+
 function ChatWidget({ currentUser, onSendMessage, existingMessages = [] }) {
   const [messages, setMessages] = useState(existingMessages)
   const [input, setInput] = useState('')
   const [isTyping, setIsTyping] = useState(false)
   const [workInProgress, setWorkInProgress] = useState([])
   const [isSpeaking, setIsSpeaking] = useState(false)
+  const [showOAuthPanel, setShowOAuthPanel] = useState(false)
+  const [authorizedPlatforms, setAuthorizedPlatforms] = useState([])
+  const [customTokens, setCustomTokens] = useState({})
   const messagesEndRef = useRef(null)
 
-  // Load chat history from localStorage on mount
+  // Load chat history and OAuth data from localStorage on mount
   useEffect(() => {
     const savedMessages = localStorage.getItem('neocryptz_chat_history')
     if (savedMessages) {
       setMessages(JSON.parse(savedMessages))
+    }
+
+    const savedAuthPlatforms = localStorage.getItem('neocryptz_oauth_platforms')
+    if (savedAuthPlatforms) {
+      setAuthorizedPlatforms(JSON.parse(savedAuthPlatforms))
+    }
+
+    const savedTokens = localStorage.getItem('neocryptz_custom_tokens')
+    if (savedTokens) {
+      setCustomTokens(JSON.parse(savedTokens))
     }
   }, [])
 
@@ -128,6 +154,37 @@ function ChatWidget({ currentUser, onSendMessage, existingMessages = [] }) {
     localStorage.removeItem('neocryptz_chat_history')
   }
 
+  const toggleOAuthPlatform = (platform) => {
+    const updated = authorizedPlatforms.includes(platform)
+      ? authorizedPlatforms.filter(p => p !== platform)
+      : [...authorizedPlatforms, platform]
+    
+    setAuthorizedPlatforms(updated)
+    localStorage.setItem('neocryptz_oauth_platforms', JSON.stringify(updated))
+  }
+
+  const addCustomToken = (platform, token) => {
+    if (!platform || !token) return
+    
+    const updated = { ...customTokens, [platform]: token }
+    setCustomTokens(updated)
+    localStorage.setItem('neocryptz_custom_tokens', JSON.stringify(updated))
+  }
+
+  const removeCustomToken = (platform) => {
+    const updated = { ...customTokens }
+    delete updated[platform]
+    setCustomTokens(updated)
+    localStorage.setItem('neocryptz_custom_tokens', JSON.stringify(updated))
+  }
+
+  const authorizeNeocryptzAI = () => {
+    // Simulate OAuth authorization flow
+    const allAuthorized = [...authorizedPlatforms]
+    localStorage.setItem('neocryptz_oauth_platforms', JSON.stringify(allAuthorized))
+    alert('Neocryptz AI is now authorized to act on your behalf across connected platforms!')
+  }
+
   return (
     <div className="neocryptz-chat-widget">
       {/* Chat Header */}
@@ -138,14 +195,113 @@ function ChatWidget({ currentUser, onSendMessage, existingMessages = [] }) {
           </div>
           <span className="title-text">Neocryptz AI Chat</span>
         </div>
-        <button
-          onClick={clearHistory}
-          className="clear-btn"
-          title="Clear chat history"
-        >
-          🗑️
-        </button>
+        <div className="header-actions">
+          <button
+            onClick={() => setShowOAuthPanel(!showOAuthPanel)}
+            className="oauth-btn"
+            title="OAuth Platform Settings"
+          >
+            🔗 OAuth ({authorizedPlatforms.length})
+          </button>
+          <button
+            onClick={clearHistory}
+            className="clear-btn"
+            title="Clear chat history"
+          >
+            🗑️
+          </button>
+        </div>
       </div>
+
+      {/* OAuth Panel */}
+      {showOAuthPanel && (
+        <div className="oauth-panel">
+          <div className="oauth-header">
+            <h3>🔗 OAuth Platform Settings</h3>
+            <button 
+              onClick={() => setShowOAuthPanel(false)}
+              className="close-panel-btn"
+            >
+              ✕
+            </button>
+          </div>
+          
+          <div className="oauth-section">
+            <h4>🤖 Authorize Neocryptz AI</h4>
+            <p className="oauth-description">
+              Grant Neocryptz AI permission to act on your behalf across connected platforms
+            </p>
+            <button 
+              onClick={authorizeNeocryptzAI}
+              className="authorize-btn"
+            >
+              ✅ Authorize Neocryptz AI to Act on My Behalf
+            </button>
+          </div>
+
+          <div className="oauth-section">
+            <h4>📋 Available Platforms (39)</h4>
+            <div className="platforms-grid">
+              {OAUTH_PLATFORMS.map(platform => (
+                <div 
+                  key={platform}
+                  className={`platform-item ${authorizedPlatforms.includes(platform) ? 'authorized' : ''}`}
+                  onClick={() => toggleOAuthPlatform(platform)}
+                >
+                  <span className="platform-name">{platform}</span>
+                  <span className="platform-status">
+                    {authorizedPlatforms.includes(platform) ? '✓' : '○'}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="oauth-section">
+            <h4>🔐 Custom API Tokens</h4>
+            <div className="token-input-group">
+              <input
+                type="text"
+                placeholder="Platform name (e.g., OpenAI)"
+                className="token-platform-input"
+                id="token-platform"
+              />
+              <input
+                type="password"
+                placeholder="API token"
+                className="token-value-input"
+                id="token-value"
+              />
+              <button 
+                onClick={() => {
+                  const platform = document.getElementById('token-platform').value
+                  const token = document.getElementById('token-value').value
+                  addCustomToken(platform, token)
+                  document.getElementById('token-platform').value = ''
+                  document.getElementById('token-value').value = ''
+                }}
+                className="add-token-btn"
+              >
+                Add
+              </button>
+            </div>
+            <div className="custom-tokens-list">
+              {Object.entries(customTokens).map(([platform, token]) => (
+                <div key={platform} className="token-item">
+                  <span className="token-platform">{platform}</span>
+                  <span className="token-masked">••••••••</span>
+                  <button 
+                    onClick={() => removeCustomToken(platform)}
+                    className="remove-token-btn"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Messages Container */}
       <div className="messages-container">

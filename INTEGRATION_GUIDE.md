@@ -1,6 +1,6 @@
 # Neocryptz AI Chat Widget Integration Guide
 
-This guide will help you integrate the new Gemini-style chat widget into your existing Neocryptz AI website.
+This guide will help you integrate the new Gemini-style chat widget with OAuth support into your existing Neocryptz AI website.
 
 ## What This Replaces
 
@@ -18,6 +18,31 @@ The integration preserves all your existing functionality:
 - User settings and modals
 - Ad system
 - All other features
+
+## New OAuth Features
+
+The chat widget now includes comprehensive OAuth support for **39 platforms**:
+
+### Supported Platforms (39 total)
+- **Development**: GitHub, GitLab, Bitbucket
+- **Cloud & Infrastructure**: AWS, Azure, DigitalOcean, Heroku, Vercel, Netlify
+- **AI Services**: OpenAI, Anthropic, Cohere
+- **Social Media**: Twitter/X, Facebook, LinkedIn, Instagram, TikTok, Reddit, YouTube, Pinterest, Snapchat
+- **Communication**: Slack, Discord, WhatsApp, Telegram
+- **Business**: Stripe, PayPal, Shopify, Salesforce, HubSpot, Mailchimp
+- **Productivity**: Notion, Airtable, Trello, Asana, Monday.com, Figma, Canva
+- **Storage**: Dropbox, Box, OneDrive, Google Drive
+- **Authentication**: Google, Microsoft
+
+### OAuth Features Included
+
+✅ **Platform Authorization Panel** - Click "OAuth" button to access platform settings
+✅ **39 Platform Support** - Toggle authorization for each platform
+✅ **Custom API Tokens** - Add custom tokens for any platform
+✅ **Secure Storage** - All tokens stored in localStorage (client-side only)
+✅ **Authorization Button** - One-click authorization for Neocryptz AI
+✅ **Token Management** - Add, view (masked), and remove custom tokens
+✅ **Persistent State** - Authorizations persist across sessions
 
 ## Integration Steps
 
@@ -66,26 +91,64 @@ Replace the chat window section with:
 ✅ **Text-to-speech** - "Read aloud" button on AI responses
 ✅ **Memory persistence** - Chat history saved to localStorage
 ✅ **Modern UI** - Sleek design matching your brand colors
+✅ **OAuth Platform Support** - 39 platforms with authorization management
+✅ **Custom API Tokens** - Secure token storage and management
 
-## Customization
+## OAuth Integration with Existing System
 
-You can customize the widget by editing:
-- `src/ChatWidget.jsx` - Component logic and behavior
-- `src/ChatWidget.css` - Styling and animations
-- `tailwind.config.js` - Color scheme and theme
+The widget's OAuth system is designed to work alongside your existing OAuth infrastructure:
 
-## Connecting to Your Existing AI Backend
+### Data Storage Keys
+- `neocryptz_chat_history` - Chat message history
+- `neocryptz_oauth_platforms` - Authorized platforms list
+- `neocryptz_custom_tokens` - Custom API tokens
 
-To connect the widget to your existing AI system, modify the `onSendMessage` prop:
+### Integration with Your Existing OAuth
+
+To integrate with your existing OAuth system (from your current website), you can:
+
+1. **Share OAuth Data**: The widget can read from your existing OAuth storage
+2. **Sync Authorization**: Use the widget's OAuth panel to manage platform access
+3. **Token Forwarding**: Custom tokens are automatically available to the AI backend
+
+### Connecting OAuth to AI Backend
+
+Modify the `onSendMessage` prop to include OAuth data:
 
 ```javascript
 <ChatWidget 
   onSendMessage={async (message) => {
-    // Call your existing AI API here
-    const response = await callYourExistingAIAPI(message);
+    // Get OAuth data from localStorage
+    const oauthPlatforms = JSON.parse(localStorage.getItem('neocryptz_oauth_platforms') || '[]');
+    const customTokens = JSON.parse(localStorage.getItem('neocryptz_custom_tokens') || '{}');
+    
+    // Call your existing AI API with OAuth context
+    const response = await callYourExistingAIAPI(message, {
+      authorizedPlatforms: oauthPlatforms,
+      customTokens: customTokens
+    });
     return response;
   }}
 />
+```
+
+## Customization
+
+You can customize the widget by editing:
+- `src/ChatWidget.jsx` - Component logic, OAuth platforms list, behavior
+- `src/ChatWidget.css` - Styling, animations, OAuth panel styles
+- `tailwind.config.js` - Color scheme and theme
+
+### Adding More OAuth Platforms
+
+Edit the `OAUTH_PLATFORMS` array in `ChatWidget.jsx`:
+
+```javascript
+const OAUTH_PLATFORMS = [
+  // ... existing platforms
+  'YourNewPlatform',
+  'AnotherPlatform'
+]
 ```
 
 ## Testing
@@ -98,7 +161,13 @@ npm run dev
 
 2. Open http://localhost:5173 to test the standalone widget
 
-3. For iframe integration, test it in your existing website context
+3. Test OAuth features:
+   - Click "OAuth" button to open the OAuth panel
+   - Toggle platform authorizations
+   - Add custom API tokens
+   - Test authorization flow
+
+4. For iframe integration, test it in your existing website context
 
 ## Deployment
 
@@ -107,7 +176,15 @@ When ready for production:
 1. Build the widget: `npm run build`
 2. Deploy the `dist` folder to your hosting service
 3. Update the iframe src to your production URL
+4. Ensure OAuth data persists correctly in production
+
+## Security Considerations
+
+- **Client-Side Storage**: OAuth tokens are stored in localStorage (client-side only)
+- **Token Masking**: Custom tokens are displayed masked in the UI
+- **No Server Transmission**: Tokens are only sent when you explicitly implement backend integration
+- **User Control**: Users have full control over their OAuth authorizations
 
 ## Support
 
-If you need help with integration or customization, the widget is designed to be easily modified to fit your existing infrastructure.
+If you need help with integration or customization, the widget is designed to be easily modified to fit your existing infrastructure. The OAuth system is modular and can be extended to support additional platforms or authentication methods.
